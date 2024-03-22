@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconocimiento de Voz</title>
+    <style>
+        #container {
+            margin: auto;
+            width: 80%;
+            text-align: center;
+        }
+
+        #output {
+            margin-bottom: 10px;
+            border: 1px solid hsl(98, 92%, 33%);
+            padding: 10px;
+            font-size: 18px;
+        }
+
+        #startButton, #stopButton {
+            font-size: 24px;
+            padding: 10px 20px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="output"></div>
+        <button id="startButton">Iniciar Reconocimiento</button>
+        <button id="stopButton" style="display:none;">Detener Reconocimiento</button>
+    </div>
+
+    <script>
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const output = document.getElementById('output');
+        let recognition;
+
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.lang = 'es-ES'; 
+            recognition.continuous = true; 
+            recognition.onresult = (event) => {
+                output.textContent = event.results[event.results.length - 1][0].transcript;
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Error de reconocimiento:', event.error);
+            };
+
+            startButton.addEventListener('click', () => {
+                recognition.start();
+                output.textContent = 'Escuchando...';
+                startButton.style.display = 'none'; 
+                stopButton.style.display = 'inline-block';
+            });
+
+            stopButton.addEventListener('click', () => {
+                recognition.stop();
+                output.textContent = 'Detenido';
+                startButton.style.display = 'inline-block'; 
+                stopButton.style.display = 'none';
+            });
+        } else {
+            output.textContent = 'El reconocimiento de voz no está soportado en este navegador.';
+        }
+    </script>
+</body>
+</html>
